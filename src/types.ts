@@ -35,6 +35,17 @@ export const FONT_OPTIONS = [
   { label: '宋体', value: '"SimSun", serif' },
   { label: '黑体', value: '"SimHei", sans-serif' },
   { label: '楷体', value: '"KaiTi", serif' },
+  { label: 'Noto Sans SC', value: '"Noto Sans SC", sans-serif' },
+  { label: 'Noto Serif SC', value: '"Noto Serif SC", serif' },
+  { label: 'WDXL Lubrifont SC', value: '"WDXL Lubrifont SC", sans-serif' },
+  { label: 'ZCOOL KuaiLe', value: '"ZCOOL KuaiLe", sans-serif' },
+  { label: 'ZCOOL QingKe', value: '"ZCOOL QingKe HuangYou", sans-serif' },
+  { label: 'ZCOOL XiaoWei', value: '"ZCOOL XiaoWei", serif' },
+  { label: 'Ma Shan Zheng', value: '"Ma Shan Zheng", serif' },
+  { label: 'Liu Jian Mao Cao', value: '"Liu Jian Mao Cao", serif' },
+  { label: 'Long Cang', value: '"Long Cang", serif' },
+  { label: 'Zhi Mang Xing', value: '"Zhi Mang Xing", serif' },
+  { label: 'Space Mono', value: '"Space Mono", monospace' },
 ]
 
 export const COLOR_PRESETS: ColorPreset[] = [
