@@ -1,13 +1,14 @@
 import { useRef, useCallback, useMemo } from 'react'
 import { AvatarPreview } from './components/AvatarPreview'
 import { TextEditor } from './components/TextEditor'
+import { TextAlignSelector } from './components/TextAlignSelector'
 import { ColorPicker } from './components/ColorPicker'
 import { PresetColors } from './components/PresetColors'
 import { ExportButton } from './components/ExportButton'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { exportCanvasAsPng } from './utils/canvas'
 import { isContrastSufficient } from './utils/contrast'
-import { DEFAULT_CONFIG, type AvatarConfig } from './types'
+import { DEFAULT_CONFIG, type AvatarConfig, type TextAlign } from './types'
 
 function App() {
   const [config, setConfig] = useLocalStorage<AvatarConfig>('avatar-gen-config', DEFAULT_CONFIG)
@@ -25,6 +26,11 @@ function App() {
 
   const handleFontChange = useCallback(
     (font: string) => setConfig((prev) => ({ ...prev, font })),
+    [setConfig],
+  )
+
+  const handleTextAlignChange = useCallback(
+    (textAlign: TextAlign) => setConfig((prev) => ({ ...prev, textAlign })),
     [setConfig],
   )
 
@@ -64,6 +70,7 @@ function App() {
                 bgColor={config.bgColor}
                 textColor={config.textColor}
                 font={config.font}
+                textAlign={config.textAlign}
                 canvasRef={canvasRef}
               />
             </div>
@@ -74,6 +81,11 @@ function App() {
                 font={config.font}
                 onTextChange={handleTextChange}
                 onFontChange={handleFontChange}
+              />
+
+              <TextAlignSelector
+                value={config.textAlign}
+                onChange={handleTextAlignChange}
               />
 
               <PresetColors onSelect={handlePresetSelect} />

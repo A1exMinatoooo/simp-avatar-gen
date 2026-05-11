@@ -3,6 +3,8 @@ const PADDING = 20
 const MIN_FONT_SIZE = 20
 const MAX_FONT_SIZE = 300
 
+type TextAlign = 'left' | 'center' | 'right'
+
 function measureTextWidth(ctx: CanvasRenderingContext2D, text: string, fontSize: number, font: string): number {
   ctx.font = `${fontSize}px ${font}`
   return ctx.measureText(text).width
@@ -47,6 +49,7 @@ export function renderAvatar(
   bgColor: string,
   textColor: string,
   font: string,
+  textAlign: TextAlign = 'center',
 ): void {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
@@ -68,15 +71,17 @@ export function renderAvatar(
 
   ctx.fillStyle = textColor
   ctx.font = `${fontSize}px ${font}`
-  ctx.textAlign = 'center'
+  ctx.textAlign = textAlign
   ctx.textBaseline = 'middle'
 
   const totalHeight = lines.length * lineHeight
   const startY = (CANVAS_SIZE - totalHeight) / 2 + lineHeight / 2
 
+  const xPosition = textAlign === 'left' ? PADDING : textAlign === 'right' ? CANVAS_SIZE - PADDING : CANVAS_SIZE / 2
+
   lines.forEach((line, index) => {
     const y = startY + index * lineHeight
-    ctx.fillText(line, CANVAS_SIZE / 2, y, maxWidth)
+    ctx.fillText(line, xPosition, y, maxWidth)
   })
 }
 

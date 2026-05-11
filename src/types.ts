@@ -1,8 +1,11 @@
+export type TextAlign = 'left' | 'center' | 'right'
+
 export interface AvatarConfig {
   text: string
   bgColor: string
   textColor: string
   font: string
+  textAlign: TextAlign
 }
 
 export interface ColorPreset {
@@ -16,7 +19,14 @@ export const DEFAULT_CONFIG: AvatarConfig = {
   bgColor: '#2563EB',
   textColor: '#FFFFFF',
   font: 'sans-serif',
+  textAlign: 'center',
 }
+
+export const TEXT_ALIGN_OPTIONS: { label: string; value: TextAlign; icon: string }[] = [
+  { label: '左对齐', value: 'left', icon: '☰' },
+  { label: '居中', value: 'center', icon: '☰' },
+  { label: '右对齐', value: 'right', icon: '☰' },
+]
 
 export const FONT_OPTIONS = [
   { label: '系统默认', value: 'sans-serif' },
