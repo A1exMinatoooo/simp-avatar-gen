@@ -18,7 +18,7 @@ export const DEFAULT_CONFIG: AvatarConfig = {
   text: '示例文字',
   bgColor: '#2563EB',
   textColor: '#FFFFFF',
-  font: 'sans-serif',
+  font: '"Noto Sans SC", sans-serif',
   textAlign: 'center',
 }
 
@@ -29,12 +29,6 @@ export const TEXT_ALIGN_OPTIONS: { label: string; value: TextAlign; icon: string
 ]
 
 export const FONT_OPTIONS = [
-  { label: '系统默认', value: 'sans-serif' },
-  { label: '微软雅黑', value: '"Microsoft YaHei", sans-serif' },
-  { label: '苹方', value: '"PingFang SC", sans-serif' },
-  { label: '宋体', value: '"SimSun", serif' },
-  { label: '黑体', value: '"SimHei", sans-serif' },
-  { label: '楷体', value: '"KaiTi", serif' },
   { label: 'Noto Sans SC', value: '"Noto Sans SC", sans-serif' },
   { label: 'Noto Serif SC', value: '"Noto Serif SC", serif' },
   { label: 'WDXL Lubrifont SC', value: '"WDXL Lubrifont SC", sans-serif' },
@@ -42,9 +36,7 @@ export const FONT_OPTIONS = [
   { label: 'ZCOOL QingKe', value: '"ZCOOL QingKe HuangYou", sans-serif' },
   { label: 'ZCOOL XiaoWei', value: '"ZCOOL XiaoWei", serif' },
   { label: 'Ma Shan Zheng', value: '"Ma Shan Zheng", serif' },
-  { label: 'Liu Jian Mao Cao', value: '"Liu Jian Mao Cao", serif' },
   { label: 'Long Cang', value: '"Long Cang", serif' },
-  { label: 'Zhi Mang Xing', value: '"Zhi Mang Xing", serif' },
   { label: 'Space Mono', value: '"Space Mono", monospace' },
 ]
 
