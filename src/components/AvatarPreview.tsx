@@ -117,19 +117,15 @@ export function AvatarPreview({
           className="max-w-full h-auto border border-gray-300 shadow-lg"
           style={{ maxWidth: '500px', width: '100%' }}
         />
-        {bgMode === 'image' && loadedImage && (
-          <DraggableText
-            position={textPosition}
-            onPositionChange={onPositionChange}
-          />
-        )}
+        <DraggableText
+          position={textPosition}
+          onPositionChange={onPositionChange}
+        />
       </div>
       {isRendering && (
         <span className="text-xs text-gray-500">渲染中...</span>
       )}
-      {bgMode === 'image' && loadedImage && (
-        <span className="text-xs text-gray-400">拖拽圆点调整文字位置</span>
-      )}
+      <span className="text-xs text-gray-400">拖拽圆点调整文字位置</span>
     </div>
   )
 }
