@@ -5,18 +5,29 @@ import { TextAlignSelector } from './components/TextAlignSelector'
 import { ColorPicker } from './components/ColorPicker'
 import { PresetColors } from './components/PresetColors'
 import { ExportButton } from './components/ExportButton'
+import { BackgroundModeToggle } from './components/BackgroundModeToggle'
+import { ImageUploader } from './components/ImageUploader'
+import { OverlaySettings } from './components/OverlaySettings'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { exportCanvasAsPng } from './utils/canvas'
 import { isContrastSufficient } from './utils/contrast'
-import { DEFAULT_CONFIG, type AvatarConfig, type TextAlign } from './types'
+import { DEFAULT_CONFIG, FONT_OPTIONS, type AvatarConfig, type TextAlign, type BackgroundMode, type TextPosition, type TextOverlay } from './types'
 
 function App() {
   const [config, setConfig] = useLocalStorage<AvatarConfig>('avatar-gen-config', DEFAULT_CONFIG)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  const migratedConfig = useMemo(() => {
+    const validFonts = FONT_OPTIONS.map((f) => f.value)
+    if (!validFonts.includes(config.font)) {
+      return { ...config, font: DEFAULT_CONFIG.font }
+    }
+    return config
+  }, [config])
+
   const contrastWarning = useMemo(
-    () => !isContrastSufficient(config.bgColor, config.textColor),
-    [config.bgColor, config.textColor],
+    () => migratedConfig.bgMode === 'color' && !isContrastSufficient(migratedConfig.bgColor, migratedConfig.textColor),
+    [migratedConfig.bgColor, migratedConfig.textColor, migratedConfig.bgMode],
   )
 
   const handleTextChange = useCallback(
@@ -49,6 +60,26 @@ function App() {
     [setConfig],
   )
 
+  const handleBgModeChange = useCallback(
+    (bgMode: BackgroundMode) => setConfig((prev) => ({ ...prev, bgMode })),
+    [setConfig],
+  )
+
+  const handleImageChange = useCallback(
+    (imageDataUrl: string | null) => setConfig((prev) => ({ ...prev, imageDataUrl })),
+    [setConfig],
+  )
+
+  const handlePositionChange = useCallback(
+    (textPosition: TextPosition) => setConfig((prev) => ({ ...prev, textPosition })),
+    [setConfig],
+  )
+
+  const handleOverlayChange = useCallback(
+    (textOverlay: TextOverlay) => setConfig((prev) => ({ ...prev, textOverlay })),
+    [setConfig],
+  )
+
   const handleExport = useCallback(() => {
     if (canvasRef.current) {
       exportCanvasAsPng(canvasRef.current, 'avatar.png')
@@ -66,37 +97,87 @@ function App() {
           <div className="md:flex">
             <div className="md:w-1/2 p-6 bg-gray-50 flex items-center justify-center">
               <AvatarPreview
-                text={config.text}
-                bgColor={config.bgColor}
-                textColor={config.textColor}
-                font={config.font}
-                textAlign={config.textAlign}
+                text={migratedConfig.text}
+                bgColor={migratedConfig.bgColor}
+                textColor={migratedConfig.textColor}
+                font={migratedConfig.font}
+                textAlign={migratedConfig.textAlign}
+                bgMode={migratedConfig.bgMode}
+                imageDataUrl={migratedConfig.imageDataUrl}
+                textPosition={migratedConfig.textPosition}
+                textOverlay={migratedConfig.textOverlay}
+                onPositionChange={handlePositionChange}
                 canvasRef={canvasRef}
               />
             </div>
 
             <div className="md:w-1/2 p-6 space-y-6">
               <TextEditor
-                text={config.text}
-                font={config.font}
+                text={migratedConfig.text}
+                font={migratedConfig.font}
                 onTextChange={handleTextChange}
                 onFontChange={handleFontChange}
               />
 
+              <BackgroundModeToggle
+                value={migratedConfig.bgMode}
+                onChange={handleBgModeChange}
+              />
+
+              {migratedConfig.bgMode === 'image' && (
+                <ImageUploader
+                  imageDataUrl={migratedConfig.imageDataUrl}
+                  onImageChange={handleImageChange}
+                />
+              )}
+
               <TextAlignSelector
-                value={config.textAlign}
+                value={migratedConfig.textAlign}
                 onChange={handleTextAlignChange}
               />
 
-              <PresetColors onSelect={handlePresetSelect} />
+              {migratedConfig.bgMode === 'color' && (
+                <>
+                  <PresetColors onSelect={handlePresetSelect} />
 
-              <ColorPicker
-                bgColor={config.bgColor}
-                textColor={config.textColor}
-                onBgChange={handleBgChange}
-                onTextChange={handleTextColorChange}
-                contrastWarning={contrastWarning}
-              />
+                  <ColorPicker
+                    bgColor={migratedConfig.bgColor}
+                    textColor={migratedConfig.textColor}
+                    onBgChange={handleBgChange}
+                    onTextChange={handleTextColorChange}
+                    contrastWarning={contrastWarning}
+                  />
+                </>
+              )}
+
+              {migratedConfig.bgMode === 'image' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      文字颜色
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={migratedConfig.textColor}
+                        onChange={(e) => handleTextColorChange(e.target.value)}
+                        className="w-10 h-10 border border-gray-300 rounded cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={migratedConfig.textColor}
+                        onChange={(e) => handleTextColorChange(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <OverlaySettings
+                    overlay={migratedConfig.textOverlay}
+                    onChange={handleOverlayChange}
+                  />
+                </>
+              )}
 
               <ExportButton onExport={handleExport} />
             </div>

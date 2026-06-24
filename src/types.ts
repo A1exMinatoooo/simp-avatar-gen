@@ -1,11 +1,27 @@
 export type TextAlign = 'left' | 'center' | 'right'
 
+export type BackgroundMode = 'color' | 'image'
+
+export interface TextPosition {
+  x: number
+  y: number
+}
+
+export interface TextOverlay {
+  bgColor: string
+  bgOpacity: number
+}
+
 export interface AvatarConfig {
   text: string
   bgColor: string
   textColor: string
   font: string
   textAlign: TextAlign
+  bgMode: BackgroundMode
+  imageDataUrl: string | null
+  textPosition: TextPosition
+  textOverlay: TextOverlay
 }
 
 export interface ColorPreset {
@@ -20,6 +36,10 @@ export const DEFAULT_CONFIG: AvatarConfig = {
   textColor: '#FFFFFF',
   font: '"Noto Sans SC", sans-serif',
   textAlign: 'center',
+  bgMode: 'color',
+  imageDataUrl: null,
+  textPosition: { x: 0.5, y: 0.5 },
+  textOverlay: { bgColor: '#000000', bgOpacity: 0.5 },
 }
 
 export const TEXT_ALIGN_OPTIONS: { label: string; value: TextAlign; icon: string }[] = [
