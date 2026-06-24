@@ -1,65 +1,55 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+## Project Overview
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+Chinese-language avatar generator built with React + TypeScript + Vite + Tailwind CSS. Generates 500×500 PNG avatars with customizable text, fonts, colors, and background images.
 
-## 1. Think Before Coding
+## Commands
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Type-check + production build |
+| `npm run preview` | Preview production build |
+| `npx tsc --noEmit` | Type-check only |
 
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+Always run `npx tsc --noEmit` before committing.
 
-## 2. Simplicity First
+## Architecture
 
-**Minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
-
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-## 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
-
-The test: Every changed line should trace directly to the user's request.
-
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
 ```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
+src/
+  types.ts              — AvatarConfig, FONT_OPTIONS, constants
+  App.tsx               — Main component, state via useLocalStorage
+  utils/canvas.ts       — renderAvatar(), exportCanvasAsPng()
+  components/
+    AvatarPreview.tsx   — Canvas preview, font preloading, render loop
+    TextEditor.tsx      — Text input, font/weight/size controls
+    FontSelector.tsx    — 2-column font grid
+    ImageCropper.tsx    — Canvas-based image crop with pan/zoom
+    DraggableText.tsx   — Pointer-event overlay for text positioning
+    BackgroundModeToggle.tsx
+    OverlaySettings.tsx
+    ColorPicker.tsx, PresetColors.tsx, TextAlignSelector.tsx
+    ExportButton.tsx
+  hooks/
+    useLocalStorage.ts  — Persisted state with migration support
+    useDebounce.ts      — Debounce values for render throttling
 ```
 
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+## Key Design Decisions
 
----
+- **Canvas rendering**: All output drawn on 500×500 canvas via `renderAvatar()` in `canvas.ts`
+- **Font loading**: All 9 Google Fonts preloaded on mount; render awaits `document.fonts.ready`
+- **Image cropping**: Canvas-based `drawImage` with normalized crop params (scale, offsetX, offsetY)
+- **State persistence**: `useLocalStorage` stores `AvatarConfig`; migration handles missing fields
+- **Font size**: `fontSize: 0` = auto-fit, `> 0` = manual px value
+- **Commits**: One commit per feature/fix. No mixing unrelated changes.
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+## Coding Guidelines
+
+- No comments unless asked
+- No features beyond what was asked
+- Match existing code style
+- Touch only what you must
+- Remove imports/variables YOUR changes made unused
