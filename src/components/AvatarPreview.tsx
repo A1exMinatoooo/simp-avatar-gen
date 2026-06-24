@@ -30,8 +30,9 @@ export function AvatarPreview({ text, bgColor, textColor, font, textAlign, canva
       cancelAnimationFrame(renderTimerRef.current)
     }
 
-    renderTimerRef.current = requestAnimationFrame(() => {
+    renderTimerRef.current = requestAnimationFrame(async () => {
       setIsRendering(true)
+      await document.fonts.ready
       renderAvatar(canvasRef.current!, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedTextAlign)
       setIsRendering(false)
       renderTimerRef.current = null
