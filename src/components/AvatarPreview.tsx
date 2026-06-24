@@ -2,7 +2,10 @@ import { useEffect, useRef, useCallback, useState } from 'react'
 import { renderAvatar } from '../utils/canvas'
 import { useDebounce } from '../hooks/useDebounce'
 import { DraggableText } from './DraggableText'
+import { FONT_OPTIONS } from '../types'
 import type { TextAlign, BackgroundMode, TextPosition, TextOverlay, ImageCrop } from '../types'
+
+const PRELOAD_WEIGHTS = [400, 700]
 
 interface AvatarPreviewProps {
   text: string
@@ -53,8 +56,12 @@ export function AvatarPreview({
   }, [bgMode, imageDataUrl])
 
   useEffect(() => {
-    document.fonts.load(`${debouncedFontWeight} 16px ${debouncedFont}`)
-  }, [debouncedFont, debouncedFontWeight])
+    for (const font of FONT_OPTIONS) {
+      for (const weight of PRELOAD_WEIGHTS) {
+        document.fonts.load(`${weight} 16px ${font.value}`)
+      }
+    }
+  }, [])
 
   const performRender = useCallback(() => {
     if (!canvasRef.current) return
@@ -67,6 +74,7 @@ export function AvatarPreview({
       setIsRendering(true)
       try {
         await document.fonts.load(`${debouncedFontWeight} 16px ${debouncedFont}`)
+        await document.fonts.ready
       } catch {
         // font load failed, proceed with fallback
       }
