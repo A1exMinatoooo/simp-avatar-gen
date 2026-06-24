@@ -8,6 +8,7 @@ import { ExportButton } from './components/ExportButton'
 import { BackgroundModeToggle } from './components/BackgroundModeToggle'
 import { ImageCropper } from './components/ImageCropper'
 import { OverlaySettings } from './components/OverlaySettings'
+import { CollapsibleSection } from './components/CollapsibleSection'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { exportCanvasAsPng } from './utils/canvas'
 import { isContrastSufficient } from './utils/contrast'
@@ -139,53 +140,55 @@ function App() {
               />
             </div>
 
-            <div className="md:w-1/2 p-6 space-y-6">
-              <TextEditor
-                text={migratedConfig.text}
-                font={migratedConfig.font}
-                fontWeight={migratedConfig.fontWeight}
-                fontSize={migratedConfig.fontSize}
-                onTextChange={handleTextChange}
-                onFontChange={handleFontChange}
-                onFontWeightChange={handleFontWeightChange}
-                onFontSizeChange={handleFontSizeChange}
-              />
-
-              <BackgroundModeToggle
-                value={migratedConfig.bgMode}
-                onChange={handleBgModeChange}
-              />
-
-              {migratedConfig.bgMode === 'image' && (
-                <ImageCropper
-                  imageDataUrl={migratedConfig.imageDataUrl}
-                  imageCrop={migratedConfig.imageCrop}
-                  onImageChange={handleImageChange}
-                  onCropChange={handleCropChange}
+            <div className="md:w-1/2 p-6 space-y-4">
+              <CollapsibleSection title="文字设置">
+                <TextEditor
+                  text={migratedConfig.text}
+                  font={migratedConfig.font}
+                  fontWeight={migratedConfig.fontWeight}
+                  fontSize={migratedConfig.fontSize}
+                  onTextChange={handleTextChange}
+                  onFontChange={handleFontChange}
+                  onFontWeightChange={handleFontWeightChange}
+                  onFontSizeChange={handleFontSizeChange}
                 />
-              )}
+                <TextAlignSelector
+                  value={migratedConfig.textAlign}
+                  onChange={handleTextAlignChange}
+                />
+              </CollapsibleSection>
 
-              <TextAlignSelector
-                value={migratedConfig.textAlign}
-                onChange={handleTextAlignChange}
-              />
+              <CollapsibleSection title="背景设置">
+                <BackgroundModeToggle
+                  value={migratedConfig.bgMode}
+                  onChange={handleBgModeChange}
+                />
 
-              {migratedConfig.bgMode === 'color' && (
-                <>
-                  <PresetColors onSelect={handlePresetSelect} />
-
-                  <ColorPicker
-                    bgColor={migratedConfig.bgColor}
-                    textColor={migratedConfig.textColor}
-                    onBgChange={handleBgChange}
-                    onTextChange={handleTextColorChange}
-                    contrastWarning={contrastWarning}
+                {migratedConfig.bgMode === 'image' && (
+                  <ImageCropper
+                    imageDataUrl={migratedConfig.imageDataUrl}
+                    imageCrop={migratedConfig.imageCrop}
+                    onImageChange={handleImageChange}
+                    onCropChange={handleCropChange}
                   />
-                </>
-              )}
+                )}
+
+                {migratedConfig.bgMode === 'color' && (
+                  <>
+                    <PresetColors onSelect={handlePresetSelect} />
+                    <ColorPicker
+                      bgColor={migratedConfig.bgColor}
+                      textColor={migratedConfig.textColor}
+                      onBgChange={handleBgChange}
+                      onTextChange={handleTextColorChange}
+                      contrastWarning={contrastWarning}
+                    />
+                  </>
+                )}
+              </CollapsibleSection>
 
               {migratedConfig.bgMode === 'image' && (
-                <>
+                <CollapsibleSection title="文字样式">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       文字颜色
@@ -205,12 +208,11 @@ function App() {
                       />
                     </div>
                   </div>
-
                   <OverlaySettings
                     overlay={migratedConfig.textOverlay}
                     onChange={handleOverlayChange}
                   />
-                </>
+                </CollapsibleSection>
               )}
 
               <ExportButton onExport={handleExport} />
