@@ -66,6 +66,7 @@ export interface RenderOptions {
   textPosition?: TextPosition
   textOverlay?: TextOverlay
   fontWeight?: number
+  fontSize?: number
 }
 
 export function renderAvatar(
@@ -112,7 +113,9 @@ export function renderAvatar(
   const maxWidth = CANVAS_SIZE - PADDING * 2
   const maxHeight = CANVAS_SIZE - PADDING * 2
 
-  const fontSize = findOptimalFontSize(ctx, lines, font, fontWeight, maxWidth, maxHeight)
+  const fontSize = (options?.fontSize ?? 0) > 0
+    ? options!.fontSize!
+    : findOptimalFontSize(ctx, lines, font, fontWeight, maxWidth, maxHeight)
   const lineHeight = fontSize * 1.2
   const totalHeight = lines.length * lineHeight
 

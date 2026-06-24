@@ -10,6 +10,7 @@ interface AvatarPreviewProps {
   textColor: string
   font: string
   fontWeight: number
+  fontSize: number
   textAlign: TextAlign
   bgMode: BackgroundMode
   imageDataUrl: string | null
@@ -21,7 +22,7 @@ interface AvatarPreviewProps {
 }
 
 export function AvatarPreview({
-  text, bgColor, textColor, font, fontWeight, textAlign,
+  text, bgColor, textColor, font, fontWeight, fontSize, textAlign,
   bgMode, imageDataUrl, imageCrop, textPosition, textOverlay,
   onPositionChange, canvasRef,
 }: AvatarPreviewProps) {
@@ -35,6 +36,7 @@ export function AvatarPreview({
   const debouncedTextColor = useDebounce(textColor, 150)
   const debouncedFont = useDebounce(font, 150)
   const debouncedFontWeight = useDebounce(fontWeight, 150)
+  const debouncedFontSize = useDebounce(fontSize, 150)
   const debouncedTextAlign = useDebounce(textAlign, 150)
   const debouncedPosition = useDebounce(textPosition, 50)
   const debouncedOverlay = useDebounce(textOverlay, 150)
@@ -75,11 +77,12 @@ export function AvatarPreview({
         textPosition: debouncedPosition,
         textOverlay: debouncedOverlay,
         fontWeight: debouncedFontWeight,
+        fontSize: debouncedFontSize,
       })
       setIsRendering(false)
       renderTimerRef.current = null
     })
-  }, [canvasRef, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedFontWeight, debouncedTextAlign, bgMode, loadedImage, debouncedCrop, debouncedPosition, debouncedOverlay])
+  }, [canvasRef, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedFontWeight, debouncedFontSize, debouncedTextAlign, bgMode, loadedImage, debouncedCrop, debouncedPosition, debouncedOverlay])
 
   useEffect(() => {
     performRender()

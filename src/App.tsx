@@ -26,6 +26,9 @@ function App() {
     if (!('fontWeight' in config)) {
       migrated = { ...migrated, fontWeight: DEFAULT_CONFIG.fontWeight }
     }
+    if (!('fontSize' in config)) {
+      migrated = { ...migrated, fontSize: DEFAULT_CONFIG.fontSize }
+    }
     if (!('imageCrop' in config)) {
       migrated = { ...migrated, imageCrop: DEFAULT_CONFIG.imageCrop }
     }
@@ -49,6 +52,11 @@ function App() {
 
   const handleFontWeightChange = useCallback(
     (fontWeight: number) => setConfig((prev) => ({ ...prev, fontWeight })),
+    [setConfig],
+  )
+
+  const handleFontSizeChange = useCallback(
+    (fontSize: number) => setConfig((prev) => ({ ...prev, fontSize })),
     [setConfig],
   )
 
@@ -119,6 +127,7 @@ function App() {
                 textColor={migratedConfig.textColor}
                 font={migratedConfig.font}
                 fontWeight={migratedConfig.fontWeight}
+                fontSize={migratedConfig.fontSize}
                 textAlign={migratedConfig.textAlign}
                 bgMode={migratedConfig.bgMode}
                 imageDataUrl={migratedConfig.imageDataUrl}
@@ -135,9 +144,11 @@ function App() {
                 text={migratedConfig.text}
                 font={migratedConfig.font}
                 fontWeight={migratedConfig.fontWeight}
+                fontSize={migratedConfig.fontSize}
                 onTextChange={handleTextChange}
                 onFontChange={handleFontChange}
                 onFontWeightChange={handleFontWeightChange}
+                onFontSizeChange={handleFontSizeChange}
               />
 
               <BackgroundModeToggle

@@ -5,12 +5,14 @@ interface TextEditorProps {
   text: string
   font: string
   fontWeight: number
+  fontSize: number
   onTextChange: (text: string) => void
   onFontChange: (font: string) => void
   onFontWeightChange: (weight: number) => void
+  onFontSizeChange: (size: number) => void
 }
 
-export function TextEditor({ text, font, fontWeight, onTextChange, onFontChange, onFontWeightChange }: TextEditorProps) {
+export function TextEditor({ text, font, fontWeight, fontSize, onTextChange, onFontChange, onFontWeightChange, onFontSizeChange }: TextEditorProps) {
   return (
     <div className="space-y-4">
       <div>
@@ -50,6 +52,33 @@ export function TextEditor({ text, font, fontWeight, onTextChange, onFontChange,
             <span key={w.value} className="text-xs text-gray-400">{w.label}</span>
           ))}
         </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            字号
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">{fontSize === 0 ? '自动' : `${fontSize}px`}</span>
+            <button
+              onClick={() => onFontSizeChange(0)}
+              className={`text-xs px-2 py-0.5 rounded transition-colors ${fontSize === 0 ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              自动
+            </button>
+          </div>
+        </div>
+        <input
+          type="range"
+          min={20}
+          max={300}
+          step={1}
+          value={fontSize === 0 ? 100 : fontSize}
+          onChange={(e) => onFontSizeChange(Number(e.target.value))}
+          disabled={fontSize === 0}
+          className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 ${fontSize === 0 ? 'opacity-40' : ''}`}
+        />
       </div>
     </div>
   )

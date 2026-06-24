@@ -24,6 +24,7 @@ export interface AvatarConfig {
   textColor: string
   font: string
   fontWeight: number
+  fontSize: number
   textAlign: TextAlign
   bgMode: BackgroundMode
   imageDataUrl: string | null
@@ -44,6 +45,7 @@ export const DEFAULT_CONFIG: AvatarConfig = {
   textColor: '#FFFFFF',
   font: '"Noto Sans SC", sans-serif',
   fontWeight: 700,
+  fontSize: 0,
   textAlign: 'center',
   bgMode: 'color',
   imageDataUrl: null,
