@@ -146,7 +146,7 @@ export function renderAvatar(
 
   ctx.fillStyle = textColor
   ctx.font = `${fontWeight} ${fontSize}px ${font}`
-  ctx.textAlign = options?.bgMode === 'image' ? 'center' : textAlign
+  ctx.textAlign = textAlign
   ctx.textBaseline = 'middle'
 
   const startY = textY - totalHeight / 2 + lineHeight / 2
