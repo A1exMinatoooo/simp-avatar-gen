@@ -99,8 +99,8 @@ export function ImageCropper({ imageDataUrl, imageCrop, onImageChange, onCropCha
 
     onCropChange(getClampedCrop({
       scale: imageCrop.scale,
-      offsetX: imageCrop.offsetX + dx,
-      offsetY: imageCrop.offsetY + dy,
+      offsetX: imageCrop.offsetX - dx,
+      offsetY: imageCrop.offsetY - dy,
     }))
   }, [image, imageCrop, getClampedCrop, onCropChange])
 
