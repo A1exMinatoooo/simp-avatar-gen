@@ -78,7 +78,12 @@ export function AvatarPreview({
       } catch {
         // font load failed, proceed with fallback
       }
-      renderAvatar(canvasRef.current!, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedTextAlign, {
+      if (!canvasRef.current) {
+        setIsRendering(false)
+        renderTimerRef.current = null
+        return
+      }
+      renderAvatar(canvasRef.current, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedTextAlign, {
         bgMode,
         image: loadedImage,
         imageCrop: debouncedCrop,

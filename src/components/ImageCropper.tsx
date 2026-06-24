@@ -76,7 +76,11 @@ export function ImageCropper({ imageDataUrl, imageCrop, onImageChange, onCropCha
   }, [image, imageCrop, getClampedCrop])
 
   useEffect(() => {
-    drawCropPreview()
+    try {
+      drawCropPreview()
+    } catch {
+      // canvas draw failed, ignore
+    }
   }, [drawCropPreview])
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
