@@ -6,23 +6,30 @@ import { ColorPicker } from './components/ColorPicker'
 import { PresetColors } from './components/PresetColors'
 import { ExportButton } from './components/ExportButton'
 import { BackgroundModeToggle } from './components/BackgroundModeToggle'
-import { ImageUploader } from './components/ImageUploader'
+import { ImageCropper } from './components/ImageCropper'
 import { OverlaySettings } from './components/OverlaySettings'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { exportCanvasAsPng } from './utils/canvas'
 import { isContrastSufficient } from './utils/contrast'
-import { DEFAULT_CONFIG, FONT_OPTIONS, type AvatarConfig, type TextAlign, type BackgroundMode, type TextPosition, type TextOverlay } from './types'
+import { DEFAULT_CONFIG, FONT_OPTIONS, type AvatarConfig, type TextAlign, type BackgroundMode, type TextPosition, type TextOverlay, type ImageCrop } from './types'
 
 function App() {
   const [config, setConfig] = useLocalStorage<AvatarConfig>('avatar-gen-config', DEFAULT_CONFIG)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const migratedConfig = useMemo(() => {
+  const migratedConfig: AvatarConfig = useMemo(() => {
     const validFonts = FONT_OPTIONS.map((f) => f.value)
+    let migrated: AvatarConfig = { ...config }
     if (!validFonts.includes(config.font)) {
-      return { ...config, font: DEFAULT_CONFIG.font }
+      migrated = { ...migrated, font: DEFAULT_CONFIG.font }
     }
-    return config
+    if (!('fontWeight' in config)) {
+      migrated = { ...migrated, fontWeight: DEFAULT_CONFIG.fontWeight }
+    }
+    if (!('imageCrop' in config)) {
+      migrated = { ...migrated, imageCrop: DEFAULT_CONFIG.imageCrop }
+    }
+    return migrated
   }, [config])
 
   const contrastWarning = useMemo(
@@ -37,6 +44,11 @@ function App() {
 
   const handleFontChange = useCallback(
     (font: string) => setConfig((prev) => ({ ...prev, font })),
+    [setConfig],
+  )
+
+  const handleFontWeightChange = useCallback(
+    (fontWeight: number) => setConfig((prev) => ({ ...prev, fontWeight })),
     [setConfig],
   )
 
@@ -67,6 +79,11 @@ function App() {
 
   const handleImageChange = useCallback(
     (imageDataUrl: string | null) => setConfig((prev) => ({ ...prev, imageDataUrl })),
+    [setConfig],
+  )
+
+  const handleCropChange = useCallback(
+    (imageCrop: ImageCrop) => setConfig((prev) => ({ ...prev, imageCrop })),
     [setConfig],
   )
 
@@ -101,9 +118,11 @@ function App() {
                 bgColor={migratedConfig.bgColor}
                 textColor={migratedConfig.textColor}
                 font={migratedConfig.font}
+                fontWeight={migratedConfig.fontWeight}
                 textAlign={migratedConfig.textAlign}
                 bgMode={migratedConfig.bgMode}
                 imageDataUrl={migratedConfig.imageDataUrl}
+                imageCrop={migratedConfig.imageCrop}
                 textPosition={migratedConfig.textPosition}
                 textOverlay={migratedConfig.textOverlay}
                 onPositionChange={handlePositionChange}
@@ -115,8 +134,10 @@ function App() {
               <TextEditor
                 text={migratedConfig.text}
                 font={migratedConfig.font}
+                fontWeight={migratedConfig.fontWeight}
                 onTextChange={handleTextChange}
                 onFontChange={handleFontChange}
+                onFontWeightChange={handleFontWeightChange}
               />
 
               <BackgroundModeToggle
@@ -125,9 +146,11 @@ function App() {
               />
 
               {migratedConfig.bgMode === 'image' && (
-                <ImageUploader
+                <ImageCropper
                   imageDataUrl={migratedConfig.imageDataUrl}
+                  imageCrop={migratedConfig.imageCrop}
                   onImageChange={handleImageChange}
+                  onCropChange={handleCropChange}
                 />
               )}
 

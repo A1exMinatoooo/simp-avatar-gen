@@ -1,12 +1,13 @@
-import type { TextAlign, TextPosition, TextOverlay, BackgroundMode } from '../types'
+import type { TextAlign, TextPosition, TextOverlay, BackgroundMode, ImageCrop } from '../types'
 
 const CANVAS_SIZE = 500
 const PADDING = 20
 const MIN_FONT_SIZE = 20
 const MAX_FONT_SIZE = 300
+const OVERLAY_RADIUS = 12
 
-function measureTextWidth(ctx: CanvasRenderingContext2D, text: string, fontSize: number, font: string): number {
-  ctx.font = `${fontSize}px ${font}`
+function measureTextWidth(ctx: CanvasRenderingContext2D, text: string, fontSize: number, fontWeight: number, font: string): number {
+  ctx.font = `${fontWeight} ${fontSize}px ${font}`
   return ctx.measureText(text).width
 }
 
@@ -14,6 +15,7 @@ function findOptimalFontSize(
   ctx: CanvasRenderingContext2D,
   lines: string[],
   font: string,
+  fontWeight: number,
   maxWidth: number,
   maxHeight: number,
 ): number {
@@ -28,7 +30,7 @@ function findOptimalFontSize(
 
     let maxLineWidth = 0
     for (const line of lines) {
-      const width = measureTextWidth(ctx, line, mid, font)
+      const width = measureTextWidth(ctx, line, mid, fontWeight, font)
       maxLineWidth = Math.max(maxLineWidth, width)
     }
 
@@ -43,11 +45,27 @@ function findOptimalFontSize(
   return bestSize
 }
 
+function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.arcTo(x + w, y, x + w, y + r, r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
+  ctx.lineTo(x + r, y + h)
+  ctx.arcTo(x, y + h, x, y + h - r, r)
+  ctx.lineTo(x, y + r)
+  ctx.arcTo(x, y, x + r, y, r)
+  ctx.closePath()
+}
+
 export interface RenderOptions {
   bgMode?: BackgroundMode
   image?: HTMLImageElement | null
+  imageCrop?: ImageCrop
   textPosition?: TextPosition
   textOverlay?: TextOverlay
+  fontWeight?: number
 }
 
 export function renderAvatar(
@@ -67,10 +85,21 @@ export function renderAvatar(
 
   if (options?.bgMode === 'image' && options.image) {
     const img = options.image
-    const scale = Math.max(CANVAS_SIZE / img.width, CANVAS_SIZE / img.height)
-    const sw = img.width * scale
-    const sh = img.height * scale
-    ctx.drawImage(img, (CANVAS_SIZE - sw) / 2, (CANVAS_SIZE - sh) / 2, sw, sh)
+    const crop = options.imageCrop ?? { scale: 1, offsetX: 0.5, offsetY: 0.5 }
+    const imgAspect = img.width / img.height
+    let srcW: number, srcH: number
+    if (imgAspect > 1) {
+      srcH = img.height
+      srcW = img.height
+    } else {
+      srcW = img.width
+      srcH = img.width
+    }
+    srcW /= crop.scale
+    srcH /= crop.scale
+    const srcX = (img.width - srcW) * crop.offsetX
+    const srcY = (img.height - srcH) * crop.offsetY
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, CANVAS_SIZE, CANVAS_SIZE)
   } else {
     ctx.fillStyle = bgColor
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
@@ -79,16 +108,17 @@ export function renderAvatar(
   const lines = text.split('\n').filter((line) => line.trim() !== '')
   if (lines.length === 0) return
 
+  const fontWeight = options?.fontWeight ?? 700
   const maxWidth = CANVAS_SIZE - PADDING * 2
   const maxHeight = CANVAS_SIZE - PADDING * 2
 
-  const fontSize = findOptimalFontSize(ctx, lines, font, maxWidth, maxHeight)
+  const fontSize = findOptimalFontSize(ctx, lines, font, fontWeight, maxWidth, maxHeight)
   const lineHeight = fontSize * 1.2
   const totalHeight = lines.length * lineHeight
 
   let maxLineWidth = 0
   for (const line of lines) {
-    ctx.font = `${fontSize}px ${font}`
+    ctx.font = `${fontWeight} ${fontSize}px ${font}`
     maxLineWidth = Math.max(maxLineWidth, ctx.measureText(line).width)
   }
 
@@ -106,12 +136,13 @@ export function renderAvatar(
     ctx.save()
     ctx.globalAlpha = bgOpacity
     ctx.fillStyle = overlayColor
-    ctx.fillRect(rectX, rectY, rectW, rectH)
+    drawRoundedRect(ctx, rectX, rectY, rectW, rectH, OVERLAY_RADIUS)
+    ctx.fill()
     ctx.restore()
   }
 
   ctx.fillStyle = textColor
-  ctx.font = `${fontSize}px ${font}`
+  ctx.font = `${fontWeight} ${fontSize}px ${font}`
   ctx.textAlign = options?.bgMode === 'image' ? 'center' : textAlign
   ctx.textBaseline = 'middle'
 

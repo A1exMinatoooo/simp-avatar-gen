@@ -1,13 +1,16 @@
 import { FontSelector } from './FontSelector'
+import { FONT_WEIGHTS } from '../types'
 
 interface TextEditorProps {
   text: string
   font: string
+  fontWeight: number
   onTextChange: (text: string) => void
   onFontChange: (font: string) => void
+  onFontWeightChange: (weight: number) => void
 }
 
-export function TextEditor({ text, font, onTextChange, onFontChange }: TextEditorProps) {
+export function TextEditor({ text, font, fontWeight, onTextChange, onFontChange, onFontWeightChange }: TextEditorProps) {
   return (
     <div className="space-y-4">
       <div>
@@ -25,6 +28,29 @@ export function TextEditor({ text, font, onTextChange, onFontChange }: TextEdito
       </div>
 
       <FontSelector value={font} onChange={onFontChange} />
+
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            字重
+          </label>
+          <span className="text-sm text-gray-500">{fontWeight}</span>
+        </div>
+        <input
+          type="range"
+          min={100}
+          max={900}
+          step={100}
+          value={fontWeight}
+          onChange={(e) => onFontWeightChange(Number(e.target.value))}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+        />
+        <div className="flex justify-between mt-1">
+          {FONT_WEIGHTS.filter((_, i) => i % 2 === 0).map((w) => (
+            <span key={w.value} className="text-xs text-gray-400">{w.label}</span>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

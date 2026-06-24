@@ -12,14 +12,22 @@ export interface TextOverlay {
   bgOpacity: number
 }
 
+export interface ImageCrop {
+  scale: number
+  offsetX: number
+  offsetY: number
+}
+
 export interface AvatarConfig {
   text: string
   bgColor: string
   textColor: string
   font: string
+  fontWeight: number
   textAlign: TextAlign
   bgMode: BackgroundMode
   imageDataUrl: string | null
+  imageCrop: ImageCrop
   textPosition: TextPosition
   textOverlay: TextOverlay
 }
@@ -35,9 +43,11 @@ export const DEFAULT_CONFIG: AvatarConfig = {
   bgColor: '#2563EB',
   textColor: '#FFFFFF',
   font: '"Noto Sans SC", sans-serif',
+  fontWeight: 700,
   textAlign: 'center',
   bgMode: 'color',
   imageDataUrl: null,
+  imageCrop: { scale: 1, offsetX: 0.5, offsetY: 0.5 },
   textPosition: { x: 0.5, y: 0.5 },
   textOverlay: { bgColor: '#000000', bgOpacity: 0.5 },
 }
@@ -46,6 +56,18 @@ export const TEXT_ALIGN_OPTIONS: { label: string; value: TextAlign; icon: string
   { label: '左对齐', value: 'left', icon: '☰' },
   { label: '居中', value: 'center', icon: '☰' },
   { label: '右对齐', value: 'right', icon: '☰' },
+]
+
+export const FONT_WEIGHTS = [
+  { label: '细体', value: 100 },
+  { label: '特细', value: 200 },
+  { label: '纤细', value: 300 },
+  { label: '常规', value: 400 },
+  { label: '中粗', value: 500 },
+  { label: '半粗', value: 600 },
+  { label: '粗体', value: 700 },
+  { label: '特粗', value: 800 },
+  { label: '黑体', value: 900 },
 ]
 
 export const FONT_OPTIONS = [
