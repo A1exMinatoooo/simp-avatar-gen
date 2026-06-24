@@ -2,16 +2,18 @@ import { useEffect, useRef, useCallback, useState } from 'react'
 import { renderAvatar } from '../utils/canvas'
 import { useDebounce } from '../hooks/useDebounce'
 import { DraggableText } from './DraggableText'
-import type { TextAlign, BackgroundMode, TextPosition, TextOverlay } from '../types'
+import type { TextAlign, BackgroundMode, TextPosition, TextOverlay, ImageCrop } from '../types'
 
 interface AvatarPreviewProps {
   text: string
   bgColor: string
   textColor: string
   font: string
+  fontWeight: number
   textAlign: TextAlign
   bgMode: BackgroundMode
   imageDataUrl: string | null
+  imageCrop: ImageCrop
   textPosition: TextPosition
   textOverlay: TextOverlay
   onPositionChange: (pos: TextPosition) => void
@@ -19,8 +21,8 @@ interface AvatarPreviewProps {
 }
 
 export function AvatarPreview({
-  text, bgColor, textColor, font, textAlign,
-  bgMode, imageDataUrl, textPosition, textOverlay,
+  text, bgColor, textColor, font, fontWeight, textAlign,
+  bgMode, imageDataUrl, imageCrop, textPosition, textOverlay,
   onPositionChange, canvasRef,
 }: AvatarPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -32,9 +34,11 @@ export function AvatarPreview({
   const debouncedBgColor = useDebounce(bgColor, 150)
   const debouncedTextColor = useDebounce(textColor, 150)
   const debouncedFont = useDebounce(font, 150)
+  const debouncedFontWeight = useDebounce(fontWeight, 150)
   const debouncedTextAlign = useDebounce(textAlign, 150)
   const debouncedPosition = useDebounce(textPosition, 50)
   const debouncedOverlay = useDebounce(textOverlay, 150)
+  const debouncedCrop = useDebounce(imageCrop, 100)
 
   useEffect(() => {
     if (bgMode === 'image' && imageDataUrl) {
@@ -46,6 +50,10 @@ export function AvatarPreview({
     }
   }, [bgMode, imageDataUrl])
 
+  useEffect(() => {
+    document.fonts.load(`${debouncedFontWeight} 16px ${debouncedFont}`)
+  }, [debouncedFont, debouncedFontWeight])
+
   const performRender = useCallback(() => {
     if (!canvasRef.current) return
 
@@ -55,17 +63,23 @@ export function AvatarPreview({
 
     renderTimerRef.current = requestAnimationFrame(async () => {
       setIsRendering(true)
-      await document.fonts.ready
+      try {
+        await document.fonts.load(`${debouncedFontWeight} 16px ${debouncedFont}`)
+      } catch {
+        // font load failed, proceed with fallback
+      }
       renderAvatar(canvasRef.current!, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedTextAlign, {
         bgMode,
         image: loadedImage,
+        imageCrop: debouncedCrop,
         textPosition: debouncedPosition,
         textOverlay: debouncedOverlay,
+        fontWeight: debouncedFontWeight,
       })
       setIsRendering(false)
       renderTimerRef.current = null
     })
-  }, [canvasRef, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedTextAlign, bgMode, loadedImage, debouncedPosition, debouncedOverlay])
+  }, [canvasRef, debouncedText, debouncedBgColor, debouncedTextColor, debouncedFont, debouncedFontWeight, debouncedTextAlign, bgMode, loadedImage, debouncedCrop, debouncedPosition, debouncedOverlay])
 
   useEffect(() => {
     performRender()
